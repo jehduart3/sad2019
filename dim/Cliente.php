@@ -1,9 +1,9 @@
 <?php
-    namespace DIM;
+    namespace dimensoes;
 
     /**
         *Model da entidade Cliente;
-        *@author Luiz André Zeredo    
+        *@author Gilson Castanheira  
     */
 
     class Cliente {
@@ -65,15 +65,15 @@
             *@param $uf UF do Cliente
             *@return Void
         */
-        public function setProspect($cpf, $nome, $sexo, $idade, $rua, $bairro, $cidade, $uf){
-            $this->$cpf= $cpf;
-            $this->$nome = $nome ;
-            $this->$sexo = $sexo;
-            $this->$idade = $idade;
-            $this->$rua = $rua;
-            $this->$bairro = $bairro;
-            $this->$cidade = $cidade;
-            $this->$uf = $uf;
+        public function setCliente($cpf, $nome, $sexo, $idade, $rua, $bairro, $cidade, $uf){
+            $this->cpf= $cpf;
+            $this->nome = $nome;
+            $this->sexo = $sexo;
+            $this->idade = $idade;
+            $this->rua = $rua;
+            $this->bairro = $bairro;
+            $this->cidade = $cidade;
+            $this->uf = $uf;
         }
         
     }
