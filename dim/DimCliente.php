@@ -2,19 +2,22 @@
 namespace dimensoes;
 mysqli_report(MYSQLI_REPORT_STRICT);
 require_once('Cliente.php');
+require_once('Sumario.php');
+use dimensoes\Sumario;
 use dimensoes\Cliente;
 
 
     class DimCliente{
         public function carregarDimCliente(){
             $dataAtual = date('Y-m-d'); 
+            $sumario = new Sumario();
             try{
             $connDimensao= $this->conectarBanco('dm_comercial');
             $connComercial= $this->conectarBanco('bd_comercial');
             }catch(\Exception $e){
                 die($e->getMessage());
             }
-            $sqlDim=$connDimensao->prepare('select SK_cliente, cpf, nome, sexo, idade, rua, bairro, cidade, uf from dm_cliente');
+            $sqlDim=$connDimensao->prepare('select SK_cliente, cpf, nome, sexo, idade, rua, bairro, cidade, uf from dim_cliente');
             $sqlDim->execute();
             $result = $sqlDim->get_result();
 
@@ -25,13 +28,14 @@ use dimensoes\Cliente;
                 if($resultComercial->num_rows !== 0){ //Teste se a consulta retornou dados
                     while($linhaCliente = $resultComercial->fetch_assoc()){ //Atribui a variavel cada linha até o ultimo
                         $cliente = new Cliente();
-                        $linhaCliente->setCliente($linhaCliente['cpf'], $linhaCliente['nome'], $linhaCliente['sexo'], $linhaCliente['idade'], $linhaCliente['rua'], $linhaCliente['bairro'], $linhaCliente['cidade'], $linhaCliente['uf']);
+                        $cliente->setCliente($linhaCliente['cpf'], $linhaCliente['nome'], $linhaCliente['sexo'], $linhaCliente['idade'], $linhaCliente['rua'], $linhaCliente['bairro'], $linhaCliente['cidade'], $linhaCliente['uf']);
 
-                        $sqlInsertDim = $connDimensao->prepare("insert into dm_cliente(cpf,nome,sexo,idade,rua,bairro,cidade,uf,data_ini) values (?,?,?,?,?,?,?,?,?");
+                        $sqlInsertDim = $connDimensao->prepare("insert into dim_cliente(cpf,nome,sexo,idade,rua,bairro,cidade,uf,data_ini) values (?,?,?,?,?,?,?,?,?)");
 
-                        $sqlInsertDim->bind_param("ssssisssss", $cliente->cpf, $cliente->nome, $cliente->sexo, $cliente->idade, $cliente->rua, $cliente->bairro, $cliente->cidade, $cliente->cidade, $cliente->uf, $dataAtual);
+                        $sqlInsertDim->bind_param("sssisssss", $cliente->cpf, $cliente->nome, $cliente->sexo, $cliente->idade, $cliente->rua, $cliente->bairro, $cliente->cidade, $cliente->uf, $dataAtual);
                         
                         $sqlInsertDim->execute();
+                        $sumario->setQuantidadeInclusoes();
                     }
                     $sqlComercial->close();
                     $sqlDim->close();
@@ -42,6 +46,7 @@ use dimensoes\Cliente;
             }else{
                 
             }
+            return $sumario;
         }
         private function conectarBanco($banco){
             if(!defined('DS')){
